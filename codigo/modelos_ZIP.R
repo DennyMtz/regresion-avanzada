@@ -493,5 +493,26 @@ parameters<-c("beta","gamma","p","mu1","ypred")
 m1_ZIPoisson_log_logit.sim<-bugs(data,inits,parameters,model.file="ZIPoisson_M2.txt",
                                  n.iter=100,n.chains=1,n.burnin=10)
 
+#################################################################################
+tabla <- tabla_4anios_ok
+variables <- c("homi_count","POBTOT","PROM_OCUP","POR_VPH_PISODT","POR_VPH_AUTOM")
+datos <- tabla %>% select(one_of(variables))
 
+n <- nrow(datos)*1
 
+#poisson y bin neg - exposure es el offset de POP_TOT
+data<-list("n"=n,"y"=datos$homi_count,"exposure"=datos$POBTOT,"x1"=datos$PROM_OCUP,"z1"=datos$POR_VPH_AUTOM)
+
+#-Defining inits-
+inits<-function(){list(beta=rep(0,2),gamma=rep(0,2),ypred=rep(1,n))}
+
+#-Selecting parameters to monitor-
+parameters<-c("beta","gamma","p","mu1","ypred")
+
+#-Running code-
+#OpenBUGS
+m1_ZIPoisson_log_logit_1.2.sim<-bugs(data,inits,parameters,model.file="ZIPoisson_1-1.txt",
+                                 n.iter=20000,n.chains=1,n.burnin=5000)
+
+out_m1_ZIPoisson_log_logit.sim<-m1_ZIPoisson_log_logit.sim$sims.list
+write_csv(as_data_frame(out_m1_ZIPoisson_log_logit.sim),"m1_ZIPoisson_log_logit.csv")
