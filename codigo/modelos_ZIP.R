@@ -362,38 +362,6 @@ head(out.sum_m1_poisson_lin.sim)
 m1_poisson_lin.dic<-m1_poisson_lin.sim$DIC
 print(m1_poisson_lin.dic) #8268
 
-
-
-
-################### MODELO 2, SEPARA POR MODALIDAD ##############
-n <- nrow(tabla_4anios_mod)
-
-#CORRELACION
-#ANALISIS DE CORRELACION, ELIMINO LAS VARIABLES NSE
-subdata <- tabla_4anios_mod[3:19]
-cor(subdata)
-
-plot(tabla_4anios_mod$homi_count,tabla_4anios_mod$INDICE_GLOBAL)
-summary(tabla_4anios_mod$INDICE_GLOBAL)
-max(tabla_4anios_mod$INDICE_GLOBAL)
-min(tabla_4anios_mod$INDICE_GLOBAL)
-
-#-Defining data-
-
-#poisson
-data<-list("n"=n,"y"=tabla_4anios_ok$homi_count,"x1"=tabla_4anios_ok$INDICE_GLOBAL, "x2"=tabla_4anios_mod$bin_ab, "x3"=tabla_4anios_mod$bin_af)
-
-#-Defining inits-
-inits<-function(){list(beta=rep(1,4),yf1=rep(1,n))}
-
-#-Selecting parameters to monitor-
-parameters<-c("beta","yf1")
-
-#-Running code-
-#OpenBUGS
-m2_poisson_log.sim<-bugs(data,inits,parameters,model.file="m2_poisson_log.txt",
-                         n.iter=20000,n.chains=1,n.burnin=2000)
-
 ########################################################################################################
 ####################  Modelos Zero-Inflated Poisson
 #-Defining data-
@@ -515,15 +483,15 @@ z <- rep(1,n)
 data<-list("n"=n,"y"=datos$homi_count,"exposure"=datos$POBTOT,"x1"=datos$bin_ab,"x2"=datos$bin_af,"z"=z)
 
 #-Defining inits-
-inits<-function(){list(beta=rep(0,2),gamma=rep(0,1),ypred=rep(1,n))}
+inits<-function(){list(beta=rep(0,3),gamma=rep(0,1),ypred=rep(1,n))}
 
 #-Selecting parameters to monitor-
 parameters<-c("beta","gamma","p","mu1","ypred")
 
 #-Running code-
 #OpenBUGS
-m1_ZIPoisson_log_logit.sim<-bugs(data,inits,parameters,model.file="ZIPoisson.txt",
-                                 n.iter=20000,n.chains=1,n.burnin=5000)
+m1_ZIPoisson_log_logit.sim<-bugs(data,inits,parameters,model.file="ZIPoisson_M2.txt",
+                                 n.iter=100,n.chains=1,n.burnin=10)
 
 
 
